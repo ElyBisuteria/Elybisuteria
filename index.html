@@ -3,113 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bisutería Ely | Catálogo</title>
-<meta name="description" content="Bisutería Ely — catálogo de bisutería. Consulta disponibilidad por WhatsApp.">
+<title>Bisutería Ely | Catálogo en línea</title>
+<meta name="description" content="Bisutería Ely — catálogo en línea. Consulta disponibilidad por WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--black:#1b1917;--text:#35302b;--beige:#e9ddcc;--cream:#f7f3ed;--line:#ddd3c8;--muted:#776f67;--white:#fff}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--white);color:var(--text);font-family:Montserrat,Arial,sans-serif}
-h1,h2,h3,.brand,.hero-title,.product-name{font-family:"Cormorant Garamond",Georgia,serif}
-a{color:inherit;text-decoration:none}
-.topbar{background:var(--black);color:#fff;text-align:center;padding:8px 15px;font-size:10px;letter-spacing:1.7px;text-transform:uppercase}
-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-.nav{max-width:1200px;margin:auto;min-height:82px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:25px}
-.brand{font-size:30px;line-height:.85;font-weight:600;letter-spacing:.5px}.brand small{display:block;text-align:center;margin-top:7px;font-family:Montserrat,sans-serif;font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-.navlinks{display:flex;gap:28px;font-size:11px;letter-spacing:1.3px;text-transform:uppercase}.navlinks a:hover{color:#8a735b}
-.wa-head{border:1px solid var(--black);padding:10px 15px;font-size:10px;letter-spacing:1px;text-transform:uppercase}.wa-head:hover{background:var(--black);color:#fff}
-.hero{background:var(--cream);padding:42px 0}
-.hero-inner{max-width:1200px;margin:auto;padding:0 28px;display:grid;grid-template-columns:.82fr 1.18fr;gap:50px;align-items:center;min-height:560px}
-.hero-copy{padding:30px 30px 30px 6%}.eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9a8268}
-.hero-title{font-size:clamp(55px,6vw,84px);line-height:.82;font-weight:500;color:var(--black);margin:18px 0 24px}
-.hero-copy p{max-width:440px;color:var(--muted);font-size:14px;line-height:1.9}
-.btn{display:inline-block;margin-top:22px;background:var(--black);color:#fff;padding:13px 23px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--black)}.btn:hover{background:transparent;color:var(--black)}
-.hero-image{width:100%;max-height:610px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#e5d7c7}
-.hero-image img{display:block;width:100%;height:100%;max-height:610px;object-fit:cover;object-position:center}
-.section{max-width:1200px;margin:auto;padding:75px 28px}
-.section-head{text-align:center;margin-bottom:35px}.section-head h2{font-size:52px;font-weight:500;margin:8px 0;color:var(--black)}.section-head p{font-size:13px;color:var(--muted)}
-.filters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:34px}
-.filter{background:#fff;border:1px solid var(--line);padding:9px 16px;font:500 10px Montserrat,sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer}.filter.active,.filter:hover{background:var(--black);color:#fff;border-color:var(--black)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.card{border:1px solid var(--line);background:#fff;overflow:hidden}.photo{aspect-ratio:1/1;background:var(--cream);display:flex;align-items:center;justify-content:center;color:#9a9188;font-family:"Cormorant Garamond",serif;font-size:23px}.photo img{width:100%;height:100%;object-fit:cover}
-.info{padding:16px}.cat{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}.product-name{font-size:24px;font-weight:600;color:var(--black);margin:4px 0}.price{font-size:13px;margin:7px 0 14px}.consult{display:block;text-align:center;border:1px solid var(--black);padding:10px;font-size:9px;letter-spacing:1.1px;text-transform:uppercase}.consult:hover{background:var(--black);color:#fff}
-.about{background:var(--cream)}.about-inner{max-width:780px;margin:auto;text-align:center}.about h2{font-size:50px;font-weight:500;margin:7px 0 14px}.about p{font-size:14px;line-height:1.9;color:var(--muted)}
-.contact{text-align:center}.contact h2{font-size:48px;font-weight:500;margin:8px 0}.contact p{color:var(--muted);font-size:13px}
-footer{background:var(--black);color:#fff;text-align:center;padding:34px 20px;font-size:10px;letter-spacing:.8px}.footer-brand{font:600 28px "Cormorant Garamond",serif;margin-bottom:8px}
-@media(max-width:900px){.navlinks{display:none}.hero-inner{grid-template-columns:1fr;gap:28px}.hero-copy{text-align:center;padding:35px 20px 10px}.hero-copy p{margin-left:auto;margin-right:auto}.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.nav{min-height:68px;padding:0 17px}.brand{font-size:27px}.wa-head{display:none}.hero{padding:20px 0}.hero-inner{padding:0 15px}.hero-title{font-size:58px}.hero-image{max-height:480px}.section{padding:55px 15px}.grid{gap:12px}.info{padding:12px}.product-name{font-size:21px}.section-head h2,.about h2{font-size:43px}}
+:root{
+  --black:#1d1b19;
+  --text:#252321;
+  --gold:#b99a73;
+  --beige:#e8d4b8;
+  --cream:#f7f4ef;
+  --line:#e7ddd0;
+  --muted:#6f6962;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--text);background:#fff;font-family:Montserrat,Arial,sans-serif}
+a{text-decoration:none;color:inherit}
+.topbar{height:50px;background:#f4eee7;display:flex;align-items:center;justify-content:space-between;padding:0 42px;font-size:13px;letter-spacing:.5px}
+.top-left,.top-right{display:flex;align-items:center;gap:18px}
+.social{font-weight:600;font-size:16px}
+.whatsapp-icon{font-size:19px}
+.header{height:140px;background:#fff;border-bottom:1px solid #eee7df;display:flex;align-items:center;padding:0 70px;gap:55px}
+.logo{width:145px;height:130px;object-fit:contain;object-position:center}
+.nav{display:flex;align-items:center;justify-content:center;gap:50px;flex:1;font-size:17px}
+.nav a{padding:15px 0;position:relative;white-space:nowrap}
+.nav a.active{color:var(--gold)}
+.nav a.active:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--gold)}
+.contact-btn{display:flex;align-items:center;gap:10px;font-size:16px;white-space:nowrap}
+.hero{min-height:695px;display:grid;grid-template-columns:37% 63%;background:#fff}
+.hero-copy{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 45px 70px}
+.eyebrow{font-size:18px;letter-spacing:7px;color:#b28f69;margin-bottom:28px}
+.hero h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:64px;line-height:1.04;margin:0;max-width:540px}
+.sparkle{color:var(--gold);font-size:32px;margin:24px 0 22px;letter-spacing:12px}
+.hero-copy p{font-size:18px;line-height:1.55;max-width:500px;margin:0 0 45px}
+.btn{background:var(--beige);padding:19px 32px;font-size:16px;letter-spacing:.5px;min-width:245px;display:inline-flex;justify-content:center;align-items:center;gap:28px}
+.btn:hover{filter:brightness(.97)}
+.hero-image{min-height:695px;background:#e5d6c3;overflow:hidden}
+.hero-image img{width:100%;height:100%;object-fit:cover;display:block}
+.benefits{height:145px;background:#faf7f2;border-top:1px solid #f1e9df;border-bottom:1px solid #e8dfd5;display:grid;grid-template-columns:repeat(4,1fr);padding:0 70px}
+.benefit{display:flex;align-items:center;gap:20px;padding:0 35px;border-right:1px solid #e3d7c8}
+.benefit:last-child{border-right:0}
+.icon{width:50px;height:50px;flex:0 0 50px;color:#b99a73}
+.icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.5}
+.benefit strong{display:block;font-size:15px;font-weight:500;letter-spacing:1px;margin-bottom:8px}
+.benefit span{display:block;font-size:14px}
+.section{padding:90px 70px;max-width:1400px;margin:auto}
+.section-head{text-align:center;margin-bottom:40px}
+.section-head .eyebrow{font-size:12px;letter-spacing:4px;margin-bottom:10px}
+.section-head h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:54px;margin:0}
+.filters{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:38px}
+.filter{border:1px solid var(--line);background:#fff;padding:10px 18px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.filter.active,.filter:hover{background:var(--black);color:#fff;border-color:var(--black)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.card{border:1px solid var(--line);background:#fff}
+.photo{aspect-ratio:1/1;background:#f5efe7;display:flex;align-items:center;justify-content:center;color:#9a8a78;font-family:"Cormorant Garamond",serif;font-size:22px}
+.photo img{width:100%;height:100%;object-fit:cover}
+.info{padding:18px}
+.cat{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#8c7a68}
+.name{font-family:"Cormorant Garamond",serif;font-size:26px;margin:4px 0}
+.price{font-size:14px;margin:8px 0 14px}
+.consult{display:block;border:1px solid var(--black);text-align:center;padding:11px;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.consult:hover{background:var(--black);color:#fff}
+.about{background:var(--cream);text-align:center}
+.about p{max-width:760px;margin:20px auto 0;line-height:1.8;color:var(--muted)}
+.contact{text-align:center}
+footer{background:var(--black);color:#fff;text-align:center;padding:35px 20px;font-size:12px;letter-spacing:.8px}
+.footer-brand{font-family:"Cormorant Garamond",serif;font-size:30px;margin-bottom:8px}
+
+@media(max-width:1100px){
+  .header{padding:0 30px;gap:25px}
+  .nav{gap:25px;font-size:14px}
+  .benefits{padding:0 25px}
+  .benefit{padding:0 15px}
+}
+@media(max-width:800px){
+  .topbar{height:auto;padding:9px 15px;justify-content:center}
+  .top-right{display:none}
+  .header{height:auto;min-height:95px;padding:10px 18px;justify-content:center}
+  .logo{width:115px;height:90px}
+  .nav{display:none}
+  .contact-btn{display:none}
+  .hero{grid-template-columns:1fr;display:flex;flex-direction:column}
+  .hero-copy{min-height:510px;padding:55px 20px}
+  .hero h1{font-size:53px}
+  .eyebrow{font-size:13px;letter-spacing:5px}
+  .hero-copy p{font-size:15px}
+  .hero-image{min-height:430px}
+  .benefits{height:auto;grid-template-columns:1fr 1fr;padding:0}
+  .benefit{min-height:115px;border-bottom:1px solid #e3d7c8}
+  .section{padding:65px 18px}
+  .grid{grid-template-columns:1fr 1fr;gap:12px}
+}
+@media(max-width:480px){
+  .hero h1{font-size:45px}
+  .hero-image{min-height:310px}
+  .benefits{grid-template-columns:1fr}
+  .benefit{border-right:0}
+  .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<div class="topbar">Bisutería Ely · Catálogo en línea · Consultas por WhatsApp</div>
+<div class="topbar">
+  <div class="top-left"><span class="whatsapp-icon">◔</span><span>33 2512 6976</span></div>
+  <div class="top-right"><span class="social">◎</span><span class="social">f</span></div>
+</div>
 
-<header>
-<nav class="nav">
-<a href="#" class="brand">Bisutería Ely<small>Detalles que perduran</small></a>
-<div class="navlinks"><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#novedades">Novedades</a><a href="#nosotros">Sobre Ely</a><a href="#contacto">Contacto</a></div>
-<a class="wa-head" target="_blank" href="https://wa.me/523325126976?text=Hola%20Bisuter%C3%ADa%20Ely%2C%20quiero%20consultar%20sobre%20un%20producto.">WhatsApp</a>
-</nav>
+<header class="header">
+  <a href="#inicio"><img class="logo" src="logo-ely.png" alt="Bisutería Ely"></a>
+  <nav class="nav">
+    <a class="active" href="#inicio">INICIO</a>
+    <a href="#catalogo">CATÁLOGO⌄</a>
+    <a href="#nuevos">NUEVOS</a>
+    <a href="#ofertas">OFERTAS</a>
+    <a href="#nosotros">SOBRE ELY</a>
+    <a href="#contacto">CONTACTO</a>
+  </nav>
+  <a class="contact-btn" target="_blank" href="https://wa.me/523325126976?text=Hola%20Bisuter%C3%ADa%20Ely%2C%20quiero%20hacer%20una%20consulta."><span class="whatsapp-icon">◔</span> CONTÁCTANOS</a>
 </header>
 
 <main id="inicio">
 <section class="hero">
-<div class="hero-inner">
-<div class="hero-copy">
-<div class="eyebrow">Bisutería Ely</div>
-<h1 class="hero-title">Elegancia<br>en cada detalle.</h1>
-<p>Descubre nuestra colección de bisutería seleccionada para complementar tu estilo. Explora el catálogo y consulta disponibilidad directamente por WhatsApp.</p>
-<a class="btn" href="#catalogo">Ver catálogo</a>
-</div>
-<div class="hero-image"><img src="portada.jpg" alt="Bisutería Ely — colección de piezas"></div>
-</div>
+  <div class="hero-copy">
+    <div class="eyebrow">BISUTERÍA ELY</div>
+    <h1>Elegancia en<br>cada detalle</h1>
+    <div class="sparkle">— ✧ —</div>
+    <p>Descubre nuestra colección de bisutería seleccionada para realzar tu estilo.</p>
+    <a class="btn" href="#catalogo">VER CATÁLOGO <span>→</span></a>
+  </div>
+  <div class="hero-image">
+    <img src="portada.jpg" alt="Bisutería Ely — colección de piezas">
+  </div>
+</section>
+
+<section class="benefits">
+  <div class="benefit"><div class="icon"><svg viewBox="0 0 64 64"><path d="M10 25 32 8l22 17-22 31Z"/><path d="m10 25 22 7 22-7M25 20l7 12 7-12"/></svg></div><div><strong>CALIDAD</strong><span>Materiales seleccionados</span></div></div>
+  <div class="benefit"><div class="icon"><svg viewBox="0 0 64 64"><path d="M32 54S8 40 8 22C8 10 23 6 32 17 41 6 56 10 56 22c0 18-24 32-24 32Z"/></svg></div><div><strong>DISEÑOS ÚNICOS</strong><span>Para cada ocasión</span></div></div>
+  <div class="benefit"><div class="icon"><svg viewBox="0 0 64 64"><path d="M32 6 52 13v17c0 14-8 23-20 28C20 53 12 44 12 30V13Z"/><path d="m23 31 6 6 12-13"/></svg></div><div><strong>CONSULTA SEGURA</strong><span>Atención directa por WhatsApp</span></div></div>
+  <div class="benefit"><div class="icon"><svg viewBox="0 0 64 64"><path d="M10 25h44v29H10zM7 25h50v-9H7zM32 16v38M32 16c-5 0-14-2-14-8 0-4 4-6 7-4 5 2 7 12 7 12Zm0 0c5 0 14-2 14-8 0-4-4-6-7-4-5 2-7 12-7 12Z"/></svg></div><div><strong>ATENCIÓN PERSONALIZADA</strong><span>Estamos para ayudarte</span></div></div>
 </section>
 
 <section class="section" id="catalogo">
-<div class="section-head"><div class="eyebrow">Nuestra selección</div><h2>Catálogo</h2><p>Consulta nuestras piezas disponibles.</p></div>
-<div class="filters" id="filters"></div>
-<div class="grid" id="grid"></div>
+  <div class="section-head"><div class="eyebrow">NUESTRA SELECCIÓN</div><h2>Catálogo</h2></div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
 </section>
 
-<section class="about" id="nosotros">
-<div class="section about-inner">
-<div class="eyebrow">Sobre Bisutería Ely</div>
-<h2>Pequeños detalles,<br>grandes momentos.</h2>
-<p>En Bisutería Ely creemos que una pieza puede transformar un look y convertirse en parte de un recuerdo. Nuestra colección busca combinar delicadeza, estilo y versatilidad para que encuentres algo que se sienta como tuyo.</p>
-</div>
+<section class="section about" id="nosotros">
+  <div class="section-head"><div class="eyebrow">SOBRE ELY</div><h2>Detalles que perduran</h2></div>
+  <p>Bisutería Ely reúne piezas seleccionadas para complementar tu estilo con elegancia y versatilidad. Este sitio es un catálogo en línea: para consultar disponibilidad o realizar un pedido, contáctanos directamente por WhatsApp.</p>
 </section>
 
 <section class="section contact" id="contacto">
-<div class="eyebrow">¿Te gustó alguna pieza?</div><h2>Consúltanos por WhatsApp</h2><p>No realizamos compras en línea. Escríbenos para consultar disponibilidad y recibir atención personalizada.</p>
-<a class="btn" target="_blank" href="https://wa.me/523325126976?text=Hola%20Bisuter%C3%ADa%20Ely%2C%20quiero%20consultar%20sobre%20un%20producto.">Contactar por WhatsApp</a>
+  <div class="section-head"><div class="eyebrow">CONTACTO</div><h2>¿Te gustó alguna pieza?</h2></div>
+  <p>Consulta disponibilidad directamente por WhatsApp.</p>
+  <a class="btn" target="_blank" href="https://wa.me/523325126976?text=Hola%20Bisuter%C3%ADa%20Ely%2C%20quiero%20consultar%20por%20una%20pieza.">WHATSAPP →</a>
 </section>
 </main>
 
-<footer><div class="footer-brand">Bisutería Ely</div>Catálogo en línea · Consultas por WhatsApp · © <span id="year"></span></footer>
+<footer><div class="footer-brand">Bisutería Ely</div>Catálogo en línea · © <span id="year"></span></footer>
 
 <script>
 const WA="523325126976";
 const products=[
-{id:1,name:"Anillo Aurora",price:299,cat:"Anillos",img:""},
-{id:2,name:"Collar Luna",price:399,cat:"Collares",img:""},
-{id:3,name:"Pulsera Siena",price:249,cat:"Pulseras",img:""},
-{id:4,name:"Aretes Rosa",price:199,cat:"Aretes",img:""}
+ {id:1,name:"Anillo Aurora",price:299,cat:"Anillos",img:""},
+ {id:2,name:"Collar Luna",price:399,cat:"Collares",img:""},
+ {id:3,name:"Pulsera Siena",price:249,cat:"Pulseras",img:""},
+ {id:4,name:"Aretes Rosa",price:199,cat:"Aretes",img:""}
 ];
 let active="Todos";
 const cats=["Todos",...new Set(products.map(p=>p.cat))];
 function money(n){return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(n)}
 function render(){
-document.getElementById("filters").innerHTML=cats.map(c=>`<button class="filter ${c===active?"active":""}" onclick="active='${c}';render()">${c}</button>`).join("");
-const list=active==="Todos"?products:products.filter(p=>p.cat===active);
-document.getElementById("grid").innerHTML=list.map(p=>`
-<article class="card">
-<div class="photo">${p.img?`<img src="${p.img}" alt="${p.name}">`:"Foto de producto"}</div>
-<div class="info"><div class="cat">${p.cat}</div><div class="product-name">${p.name}</div><div class="price">${money(p.price)}</div>
-<a class="consult" target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent("Hola Bisutería Ely, me interesa "+p.name+" de "+money(p.price)+". ¿Está disponible?")}">Consultar por WhatsApp</a></div>
-</article>`).join("");
+ document.getElementById("filters").innerHTML=cats.map(c=>`<button class="filter ${c===active?"active":""}" onclick="active='${c}';render()">${c}</button>`).join("");
+ const list=active==="Todos"?products:products.filter(p=>p.cat===active);
+ document.getElementById("grid").innerHTML=list.map(p=>`
+ <article class="card">
+   <div class="photo">${p.img?`<img src="${p.img}" alt="${p.name}">`:`Próximamente`}</div>
+   <div class="info">
+     <div class="cat">${p.cat}</div>
+     <div class="name">${p.name}</div>
+     <div class="price">${money(p.price)}</div>
+     <a class="consult" target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent("Hola Bisutería Ely, me interesa "+p.name+" de "+money(p.price)+". ¿Está disponible?")}">Consultar por WhatsApp</a>
+   </div>
+ </article>`).join("");
 }
-document.getElementById("year").textContent=new Date().getFullYear();render();
+document.getElementById("year").textContent=new Date().getFullYear();
+render();
 </script>
 </body>
 </html>
