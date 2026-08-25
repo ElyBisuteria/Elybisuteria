@@ -24,10 +24,7 @@
 <body>
 <div class="topbar">
 <div class="top-left"><span class="whatsapp-icon"><svg viewBox="0 0 24 24"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L4 20l1.1-3.6A8.5 8.5 0 1 1 20.5 11.5Z"/><path d="M9.2 8.5c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.7 1.6c.1.2.1.4-.1.6l-.5.6c.5 1 1.3 1.8 2.3 2.3l.6-.5c.2-.2.4-.2.6-.1l1.5.7c.3.1.4.3.4.5v.5c0 .3-.1.5-.4.7-.4.3-1.1.5-1.7.4-1.3-.2-2.8-1-4-2.1-1.1-1.1-1.9-2.5-2.1-3.9-.1-.7.1-1.4.4-1.8Z"/></svg></span><span>33 2512 6976</span></div>
-<div class="top-right">
-<a class="social-link" id="instagramLink" href="#" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
-<a class="social-link facebook" id="facebookLink" href="#" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 21v-8h2.7l.4-3H14V8.1c0-.9.3-1.5 1.6-1.5h1.7V4a22 22 0 0 0-2.5-.1c-2.5 0-4.2 1.5-4.2 4.3V10H8v3h2.6v8H14Z"/></svg></a>
-</div></div>
+<div class="top-right"></div></div>
 
 <header class="header">
 <a href="#inicio"><img class="logo" src="logo-ely.png" alt="Bisutería Ely"></a>
@@ -57,11 +54,8 @@
 
 <script>
 /* Estructura preparada para el Admin:
-   socialLinks: el Admin podrá guardar los links de Instagram/Facebook.
    products: el Admin podrá cambiar descripción y available sin tocar el diseño.
 */
-const settings={socialLinks:{instagram:"#",facebook:"#"}};
-
 const categories=[
 {id:"anillos",name:"Anillos"},
 {id:"collares",name:"Collares"},
@@ -89,8 +83,6 @@ document.getElementById("filters").innerHTML=cats.map(c=>`<button class="filter 
 const selectedCategory=categories.find(c=>c.name===active);const list=active==="Todos"?products:products.filter(p=>p.category===selectedCategory?.id);
 document.getElementById("grid").innerHTML=list.map(p=>`<article class="card ${p.available?"":"unavailable"}"><div class="photo">${p.available?"":"<span class='unavailable-badge'>No disponible</span>"}${p.img?`<img src="${p.img}" alt="${p.name}">`:"Próximamente"}</div><div class="info"><div class="cat">${categories.find(c=>c.id===p.category)?.name||""}</div><div class="name">${p.name}</div><div class="description">${p.description}</div><div class="price">${money(p.price)}</div><a class="consult" target="_blank" href="https://wa.me/523325126976?text=${encodeURIComponent("Hola Bisutería Ely, me interesa "+p.name+". ¿Está disponible?")}">${p.available?"Consultar por WhatsApp":"Consultar disponibilidad"}</a></div></article>`).join("");
 }
-document.getElementById("instagramLink").href=settings.socialLinks.instagram;
-document.getElementById("facebookLink").href=settings.socialLinks.facebook;
 document.getElementById("year").textContent=new Date().getFullYear();render();
 </script>
 </body>
