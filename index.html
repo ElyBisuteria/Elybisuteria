@@ -52,38 +52,113 @@
 </main>
 <footer><div class="footer-brand">Bisutería Ely</div>Catálogo en línea · © <span id="year"></span></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
-/* Estructura preparada para el Admin:
-   products: el Admin podrá cambiar descripción y available sin tocar el diseño.
+/*
+  DISEÑO PÚBLICO BLOQUEADO.
+  Esta sección sólo administra los datos del catálogo.
+  El Admin podrá cambiar productos, categorías, foto, descripción,
+  precio y disponibilidad sin modificar el diseño.
 */
-const categories=[
+
+const fallbackCategories=[
 {id:"anillos",name:"Anillos"},
 {id:"collares",name:"Collares"},
 {id:"pulseras",name:"Pulseras"},
 {id:"aretes",name:"Aretes"}
 ];
 
-const products=[
+const fallbackProducts=[
 {id:1,name:"Anillo Aurora",price:299,category:"anillos",description:"Diseño elegante y versátil, ideal para complementar cualquier look.",available:false,img:""},
 {id:2,name:"Collar Luna",price:399,category:"collares",description:"Cadena delicada con un acabado sutil para usar todos los días.",available:true,img:""},
 {id:3,name:"Pulsera Siena",price:249,category:"pulseras",description:"Pulsera de estilo delicado que combina fácilmente con otras piezas.",available:true,img:""},
 {id:4,name:"Aretes Rosa",price:199,category:"aretes",description:"Un detalle ligero y femenino para darle un toque especial a tu estilo.",available:true,img:""}
 ];
 
-/* Estructura preparada para el futuro Admin:
-   - Crear / editar / eliminar categorías en `categories`
-   - Asignar cada producto mediante `product.category`
-   - Mantener diseño, imágenes y fuentes sin cambios
-*/
+let categories=[...fallbackCategories];
+let products=[...fallbackProducts];
 let active="Todos";
-const cats=["Todos",...categories.map(c=>c.name)];
-function money(n){return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(n)}
-function render(){
-document.getElementById("filters").innerHTML=cats.map(c=>`<button class="filter ${c===active?"active":""}" onclick="active='${c}';render()">${c}</button>`).join("");
-const selectedCategory=categories.find(c=>c.name===active);const list=active==="Todos"?products:products.filter(p=>p.category===selectedCategory?.id);
-document.getElementById("grid").innerHTML=list.map(p=>`<article class="card ${p.available?"":"unavailable"}"><div class="photo">${p.available?"":"<span class='unavailable-badge'>No disponible</span>"}${p.img?`<img src="${p.img}" alt="${p.name}">`:"Próximamente"}</div><div class="info"><div class="cat">${categories.find(c=>c.id===p.category)?.name||""}</div><div class="name">${p.name}</div><div class="description">${p.description}</div><div class="price">${money(p.price)}</div><a class="consult" target="_blank" href="https://wa.me/523325126976?text=${encodeURIComponent("Hola Bisutería Ely, me interesa "+p.name+". ¿Está disponible?")}">${p.available?"Consultar por WhatsApp":"Consultar disponibilidad"}</a></div></article>`).join("");
+
+function money(n){
+  return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(Number(n||0));
 }
-document.getElementById("year").textContent=new Date().getFullYear();render();
+
+function render(){
+  const cats=["Todos",...categories.map(c=>c.name)];
+  document.getElementById("filters").innerHTML=cats.map(c =>
+    `<button class="filter ${c===active?"active":""}" onclick="active=${JSON.stringify(c)};render()">${c}</button>`
+  ).join("");
+
+  const selectedCategory=categories.find(c=>c.name===active);
+  const list=active==="Todos"
+    ? products
+    : products.filter(p=>p.category===selectedCategory?.id);
+
+  document.getElementById("grid").innerHTML=list.map(p=>`
+    <article class="card ${p.available?"":"unavailable"}">
+      <div class="photo">
+        ${p.available?"":"<span class='unavailable-badge'>No disponible</span>"}
+        ${p.img?`<img src="${p.img}" alt="${p.name}">`:"Próximamente"}
+      </div>
+      <div class="info">
+        <div class="cat">${categories.find(c=>c.id===p.category)?.name||""}</div>
+        <div class="name">${p.name}</div>
+        <div class="description">${p.description||""}</div>
+        <div class="price">${money(p.price)}</div>
+        <a class="consult" target="_blank"
+           href="https://wa.me/523325126976?text=${encodeURIComponent("Hola Bisutería Ely, me interesa "+p.name+". ¿Está disponible?")}">
+          ${p.available?"Consultar por WhatsApp":"Consultar disponibilidad"}
+        </a>
+      </div>
+    </article>
+  `).join("");
+}
+
+async function loadCatalog(){
+  const cfg=window.ELY_SUPABASE||{};
+  if(!cfg.url || !cfg.key || cfg.url.includes("TU-PROYECTO")){
+    render();
+    return;
+  }
+
+  try{
+    const client=window.supabase.createClient(cfg.url,cfg.key);
+
+    const [{data:catData,error:catError},{data:prodData,error:prodError}]=await Promise.all([
+      client.from("categories").select("id,name,sort_order").order("sort_order",{ascending:true}).order("name",{ascending:true}),
+      client.from("products").select("id,name,price,category_id,description,available,image_url,sort_order").order("sort_order",{ascending:true}).order("created_at",{ascending:false})
+    ]);
+
+    if(catError) throw catError;
+    if(prodError) throw prodError;
+
+    if(catData?.length){
+      categories=catData.map(c=>({id:c.id,name:c.name}));
+    }
+    if(prodData?.length){
+      products=prodData.map(p=>({
+        id:p.id,
+        name:p.name,
+        price:Number(p.price),
+        category:p.category_id,
+        description:p.description||"",
+        available:p.available,
+        img:p.image_url||""
+      }));
+    } else if(catData?.length){
+      products=[];
+    }
+  }catch(err){
+    console.warn("No se pudo cargar Supabase; se usa el catálogo local.",err);
+  }
+
+  if(active!=="Todos" && !categories.some(c=>c.name===active)) active="Todos";
+  render();
+}
+
+document.getElementById("year").textContent=new Date().getFullYear();
+loadCatalog();
 </script>
 </body>
 </html>
