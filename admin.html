@@ -30,6 +30,12 @@ textarea{min-height:90px;resize:vertical}
 .login{max-width:430px;margin:80px auto}
 .note{font-size:12px;color:var(--muted);line-height:1.6}
 .preview-link{font-size:12px;text-decoration:underline}
+
+.admin-tools{display:grid;grid-template-columns:1fr 280px;gap:12px;margin-bottom:16px}
+.admin-tools input,.admin-tools select{background:#fff}
+.filter-summary{font-size:12px;color:var(--muted);margin-bottom:12px}
+@media(max-width:760px){.admin-tools{grid-template-columns:1fr}}
+
 @media(max-width:760px){.wrap{padding:16px}.row,.row3{grid-template-columns:1fr}.header{align-items:flex-start}.item{align-items:flex-start;flex-direction:column}.item .actions{margin-top:4px}}
 </style>
 </head>
@@ -116,6 +122,21 @@ textarea{min-height:90px;resize:vertical}
 
   <section class="card">
     <h2>Productos</h2>
+
+    <div class="admin-tools">
+      <div>
+        <label>Buscar productos</label>
+        <input id="productSearch" type="search" placeholder="Busca por nombre, descripción, precio, categoría, disponibilidad, nuevo, oferta...">
+      </div>
+      <div>
+        <label>Filtrar por categoría</label>
+        <select id="productCategoryFilter">
+          <option value="">Todas las categorías</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="productFilterSummary" class="filter-summary"></div>
     <div id="productList" class="list"></div>
   </section>
 </div>
@@ -190,6 +211,7 @@ async function loadCategories(){
   if(error){showStatus("categoryStatus",error.message,"error");return;}
   categories=data||[];
   $("productCategory").innerHTML=categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  if($("productCategoryFilter")) renderProductFilters();
   $("categoryList").innerHTML=categories.length?categories.map(c=>`
     <div class="item">
       <div class="item-main"><strong>${c.name}</strong><div class="meta">Orden: ${c.sort_order}</div></div>
@@ -237,20 +259,78 @@ async function loadProducts(){
   const {data,error}=await sb.from("products").select("*").order("sort_order").order("created_at",{ascending:false});
   if(error){showStatus("productStatus",error.message,"error");return;}
   products=data||[];
-  $("productList").innerHTML=products.length?products.map(p=>{
+  renderProductFilters();
+  renderProductList();
+}
+
+
+function renderProductFilters(){
+  const filter=$("productCategoryFilter");
+  const current=filter.value;
+  filter.innerHTML='<option value="">Todas las categorías</option>'+
+    categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  if([...filter.options].some(o=>o.value===current)) filter.value=current;
+}
+
+function normalizeSearch(value){
+  return String(value??"")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"");
+}
+
+function productSearchText(p){
+  const category=categories.find(c=>c.id===p.category_id)?.name||"";
+  const fields=[
+    p.name,
+    p.description,
+    p.price,
+    p.sale_price,
+    category,
+    p.available ? "disponible" : "no disponible",
+    p.is_new ? "nuevo nueva" : "",
+    p.on_sale ? "oferta descuento rebaja" : "",
+    p.sort_order
+  ];
+  return normalizeSearch(fields.join(" "));
+}
+
+function renderProductList(){
+  const query=normalizeSearch($("productSearch")?.value.trim()||"");
+  const categoryId=$("productCategoryFilter")?.value||"";
+
+  let visible=products.filter(p=>{
+    const matchesCategory=!categoryId || p.category_id===categoryId;
+    const matchesSearch=!query || productSearchText(p).includes(query);
+    return matchesCategory && matchesSearch;
+  });
+
+  $("productFilterSummary").textContent=
+    `${visible.length} de ${products.length} producto${products.length===1?"":"s"} mostrado${visible.length===1?"":"s"}.`;
+
+  $("productList").innerHTML=visible.length?visible.map(p=>{
     const cat=categories.find(c=>c.id===p.category_id)?.name||"Sin categoría";
+    const saleText=p.on_sale && p.sale_price!==null
+      ? ` · Oferta $${Number(p.sale_price).toLocaleString("es-MX")}`
+      : "";
     return `<div class="item">
       <div class="product-main">
         ${p.image_url?`<img class="thumb" src="${p.image_url}" alt="">`:`<div class="thumb"></div>`}
-        <div class="item-main"><strong>${p.name}</strong><div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}${p.is_new?" · Nuevo":""}${p.on_sale?" · Oferta":""}</div></div>
+        <div class="item-main">
+          <strong>${p.name}</strong>
+          <div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}${p.is_new?" · Nuevo":""}${p.on_sale?" · Oferta":""}${saleText}</div>
+        </div>
       </div>
       <div class="actions">
         <button class="btn secondary" onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
         <button class="btn danger" onclick='deleteProduct("${p.id}")'>Eliminar</button>
       </div>
     </div>`;
-  }).join(""):`<div class="note">Todavía no hay productos.</div>`;
+  }).join(""):`<div class="note">No se encontraron productos con esos filtros.</div>`;
 }
+
+$("productSearch").addEventListener("input",renderProductList);
+$("productCategoryFilter").addEventListener("change",renderProductList);
 
 $("productForm").addEventListener("submit",async e=>{
   e.preventDefault();
