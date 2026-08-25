@@ -97,6 +97,12 @@ textarea{min-height:90px;resize:vertical}
         <div><label>Disponibilidad</label><select id="productAvailable"><option value="true">Disponible</option><option value="false">No disponible</option></select></div>
       </div>
 
+      <div class="row3" style="margin-top:14px">
+        <div><label>Producto nuevo</label><select id="productIsNew"><option value="false">No</option><option value="true">Sí</option></select></div>
+        <div><label>En oferta</label><select id="productOnSale"><option value="false">No</option><option value="true">Sí</option></select></div>
+        <div><label>Precio de oferta MXN</label><input id="productSalePrice" type="number" min="0" step="0.01" placeholder="Opcional"></div>
+      </div>
+
       <div style="margin-top:14px"><label>Descripción</label><textarea id="productDescription" maxlength="300" placeholder="Descripción breve del producto"></textarea></div>
       <div style="margin-top:14px"><label>Foto principal</label><input id="productImage" type="file" accept="image/*"><div class="note">Una foto principal por producto. Puedes cambiarla cuando quieras.</div></div>
 
@@ -236,7 +242,7 @@ async function loadProducts(){
     return `<div class="item">
       <div class="product-main">
         ${p.image_url?`<img class="thumb" src="${p.image_url}" alt="">`:`<div class="thumb"></div>`}
-        <div class="item-main"><strong>${p.name}</strong><div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}</div></div>
+        <div class="item-main"><strong>${p.name}</strong><div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}${p.is_new?" · Nuevo":""}${p.on_sale?" · Oferta":""}</div></div>
       </div>
       <div class="actions">
         <button class="btn secondary" onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
@@ -264,12 +270,20 @@ $("productForm").addEventListener("submit",async e=>{
     imageUrl=urlData.publicUrl;imagePath=path;
   }
 
+  if($("productOnSale").value==="true" && $("productSalePrice").value===""){
+    showStatus("productStatus","Si el producto está en oferta, agrega el precio de oferta.","error");
+    return;
+  }
+
   const payload={
     name:$("productName").value.trim(),
     price:Number($("productPrice").value),
     category_id:$("productCategory").value,
     description:$("productDescription").value.trim(),
     available:$("productAvailable").value==="true",
+    is_new:$("productIsNew").value==="true",
+    on_sale:$("productOnSale").value==="true",
+    sale_price:$("productOnSale").value==="true" && $("productSalePrice").value!=="" ? Number($("productSalePrice").value) : null,
     sort_order:Number($("productSort").value||0),
     image_url:imageUrl,
     image_path:imagePath
@@ -299,6 +313,11 @@ window.editProduct=p=>{
   $("productCategory").value=p.category_id;
   $("productDescription").value=p.description||"";
   $("productAvailable").value=String(p.available);
+  $("productIsNew").value=String(!!p.is_new);
+  $("productOnSale").value=String(!!p.on_sale);
+  $("productSalePrice").value=p.sale_price??"";
+  syncSalePrice();
+  if(p.on_sale) $("productSalePrice").value=p.sale_price??"";
   $("productSort").value=p.sort_order||0;
   $("existingImage").value=p.image_url||"";
   $("existingImagePath").value=p.image_path||"";
@@ -309,10 +328,18 @@ window.editProduct=p=>{
 function resetProductForm(){
   $("productForm").reset();
   $("productId").value="";$("existingImage").value="";$("existingImagePath").value="";
-  $("productSort").value=0;$("productAvailable").value="true";
+  $("productSort").value=0;$("productAvailable").value="true";$("productIsNew").value="false";$("productOnSale").value="false";$("productSalePrice").value="";
   $("cancelProduct").classList.add("hidden");
 }
 $("cancelProduct").addEventListener("click",resetProductForm);
+
+function syncSalePrice(){
+  const onSale=$("productOnSale").value==="true";
+  $("productSalePrice").disabled=!onSale;
+  if(!onSale) $("productSalePrice").value="";
+}
+$("productOnSale").addEventListener("change",syncSalePrice);
+syncSalePrice();
 
 window.deleteProduct=async id=>{
   const p=products.find(x=>x.id===id);
