@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin | Bisutería Ely</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--black:#1d1b19;--text:#252321;--gold:#b99a73;--beige:#e8d4b8;--cream:#f7f4ef;--line:#e7ddd0;--muted:#6f6962;--danger:#9b3b32}
+*{box-sizing:border-box}body{margin:0;background:#f7f4ef;color:var(--text);font-family:Montserrat,Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+.wrap{max-width:1180px;margin:auto;padding:28px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}
+.brand{font-family:"Cormorant Garamond",serif;font-size:38px}.sub{color:var(--muted);font-size:12px}
+.card{background:#fff;border:1px solid var(--line);padding:22px;margin-bottom:20px}
+h2{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:600;margin:0 0 18px}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px}
+label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;color:var(--muted)}
+input,textarea,select{width:100%;border:1px solid var(--line);padding:11px;background:#fff;color:var(--text)}
+textarea{min-height:90px;resize:vertical}
+.btn{border:1px solid var(--black);background:var(--black);color:#fff;padding:11px 16px;cursor:pointer}
+.btn.secondary{background:#fff;color:var(--black)}.btn.danger{border-color:var(--danger);background:#fff;color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hidden{display:none!important}.status{font-size:12px;margin:10px 0;color:var(--muted)}.error{color:var(--danger)}.success{color:#41664b}
+.list{display:grid;gap:10px}.item{border:1px solid var(--line);padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff}.item-main{min-width:0}.item strong{display:block}.meta{font-size:12px;color:var(--muted);margin-top:4px}
+.thumb{width:66px;height:66px;object-fit:cover;background:#f2ede6;border:1px solid var(--line);margin-right:12px}.product-main{display:flex;align-items:center;min-width:0}
+.badge{display:inline-block;padding:4px 7px;border:1px solid var(--line);font-size:9px;text-transform:uppercase;letter-spacing:.6px}.badge.off{color:#806f60;background:#faf8f5}
+.login{max-width:430px;margin:80px auto}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+.preview-link{font-size:12px;text-decoration:underline}
+@media(max-width:760px){.wrap{padding:16px}.row,.row3{grid-template-columns:1fr}.header{align-items:flex-start}.item{align-items:flex-start;flex-direction:column}.item .actions{margin-top:4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="setupWarning" class="card hidden">
+  <h2>Falta conectar Supabase</h2>
+  <p class="note">Abre <b>supabase-config.js</b> y pega tu Project URL y tu Publishable key. No uses la service_role key.</p>
+</section>
+
+<section id="loginPanel" class="card login">
+  <div class="brand">Bisutería Ely</div>
+  <div class="sub">Panel de administración</div>
+  <h2 style="margin-top:28px">Ingresar</h2>
+  <form id="loginForm">
+    <label>Correo</label><input id="loginEmail" type="email" required autocomplete="username">
+    <label style="margin-top:14px">Contraseña</label><input id="loginPassword" type="password" required autocomplete="current-password">
+    <div class="actions"><button class="btn" type="submit">Entrar</button></div>
+    <div id="loginStatus" class="status"></div>
+  </form>
+</section>
+
+<div id="adminPanel" class="hidden">
+  <div class="header">
+    <div><div class="brand">Bisutería Ely</div><div class="sub">Administración del catálogo</div></div>
+    <div class="actions">
+      <a class="btn secondary preview-link" href="./" target="_blank">Ver catálogo</a>
+      <button class="btn secondary" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2>Categorías</h2>
+    <form id="categoryForm">
+      <input id="categoryId" type="hidden">
+      <div class="row">
+        <div><label>Nombre de categoría</label><input id="categoryName" required maxlength="60" placeholder="Ej. Tobilleras"></div>
+        <div><label>Orden</label><input id="categorySort" type="number" min="0" value="0"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Guardar categoría</button>
+        <button class="btn secondary hidden" type="button" id="cancelCategory">Cancelar edición</button>
+      </div>
+      <div id="categoryStatus" class="status"></div>
+    </form>
+    <div id="categoryList" class="list"></div>
+  </section>
+
+  <section class="card">
+    <h2>Producto</h2>
+    <form id="productForm">
+      <input id="productId" type="hidden">
+      <input id="existingImage" type="hidden">
+      <input id="existingImagePath" type="hidden">
+
+      <div class="row">
+        <div><label>Nombre</label><input id="productName" required maxlength="100"></div>
+        <div><label>Categoría</label><select id="productCategory" required></select></div>
+      </div>
+
+      <div class="row3" style="margin-top:14px">
+        <div><label>Precio MXN</label><input id="productPrice" type="number" min="0" step="0.01" required></div>
+        <div><label>Orden</label><input id="productSort" type="number" min="0" value="0"></div>
+        <div><label>Disponibilidad</label><select id="productAvailable"><option value="true">Disponible</option><option value="false">No disponible</option></select></div>
+      </div>
+
+      <div style="margin-top:14px"><label>Descripción</label><textarea id="productDescription" maxlength="300" placeholder="Descripción breve del producto"></textarea></div>
+      <div style="margin-top:14px"><label>Foto principal</label><input id="productImage" type="file" accept="image/*"><div class="note">Una foto principal por producto. Puedes cambiarla cuando quieras.</div></div>
+
+      <div class="actions">
+        <button class="btn" type="submit">Guardar producto</button>
+        <button class="btn secondary hidden" type="button" id="cancelProduct">Cancelar edición</button>
+      </div>
+      <div id="productStatus" class="status"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Productos</h2>
+    <div id="productList" class="list"></div>
+  </section>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+const cfg=window.ELY_SUPABASE||{};
+const configured=cfg.url && cfg.key && !cfg.url.includes("TU-PROYECTO");
+const sb=configured?window.supabase.createClient(cfg.url,cfg.key):null;
+
+let categories=[];
+let products=[];
+
+const $=id=>document.getElementById(id);
+const showStatus=(id,msg,type="")=>{const el=$(id);el.textContent=msg;el.className="status "+type};
+
+if(!configured){
+  $("setupWarning").classList.remove("hidden");
+  $("loginForm").querySelectorAll("input,button").forEach(el=>el.disabled=true);
+}
+
+function slugify(s){
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"").slice(0,50);
+}
+function safeFileName(name){
+  const dot=name.lastIndexOf(".");
+  const ext=dot>=0?name.slice(dot+1).toLowerCase():"jpg";
+  const stem=slugify(dot>=0?name.slice(0,dot):name)||"foto";
+  return `${Date.now()}-${stem}.${ext}`;
+}
+
+async function ensureSession(){
+  if(!configured) return;
+  const {data}=await sb.auth.getSession();
+  setAuthUI(!!data.session);
+  if(data.session) await refreshAll();
+}
+function setAuthUI(logged){
+  $("loginPanel").classList.toggle("hidden",logged);
+  $("adminPanel").classList.toggle("hidden",!logged);
+}
+
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  showStatus("loginStatus","Ingresando...");
+  const {error}=await sb.auth.signInWithPassword({
+    email:$("loginEmail").value.trim(),
+    password:$("loginPassword").value
+  });
+  if(error){showStatus("loginStatus",error.message,"error");return;}
+  showStatus("loginStatus","");
+  setAuthUI(true);
+  await refreshAll();
+});
+
+$("logoutBtn").addEventListener("click",async()=>{
+  await sb.auth.signOut();
+  setAuthUI(false);
+});
+
+async function refreshAll(){
+  await loadCategories();
+  await loadProducts();
+}
+
+async function loadCategories(){
+  const {data,error}=await sb.from("categories").select("*").order("sort_order").order("name");
+  if(error){showStatus("categoryStatus",error.message,"error");return;}
+  categories=data||[];
+  $("productCategory").innerHTML=categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  $("categoryList").innerHTML=categories.length?categories.map(c=>`
+    <div class="item">
+      <div class="item-main"><strong>${c.name}</strong><div class="meta">Orden: ${c.sort_order}</div></div>
+      <div class="actions">
+        <button class="btn secondary" onclick='editCategory(${JSON.stringify(c)})'>Editar</button>
+        <button class="btn danger" onclick='deleteCategory("${c.id}")'>Eliminar</button>
+      </div>
+    </div>`).join(""):`<div class="note">Todavía no hay categorías.</div>`;
+}
+
+$("categoryForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const id=$("categoryId").value;
+  const payload={name:$("categoryName").value.trim(),sort_order:Number($("categorySort").value||0)};
+  if(!payload.name) return;
+  showStatus("categoryStatus","Guardando...");
+  let res;
+  if(id) res=await sb.from("categories").update(payload).eq("id",id);
+  else res=await sb.from("categories").insert({...payload,id:slugify(payload.name)+"-"+Date.now().toString().slice(-5)});
+  if(res.error){showStatus("categoryStatus",res.error.message,"error");return;}
+  resetCategoryForm();showStatus("categoryStatus","Categoría guardada.","success");await refreshAll();
+});
+
+window.editCategory=c=>{
+  $("categoryId").value=c.id;$("categoryName").value=c.name;$("categorySort").value=c.sort_order;
+  $("cancelCategory").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});
+};
+function resetCategoryForm(){
+  $("categoryForm").reset();$("categoryId").value="";$("categorySort").value=0;$("cancelCategory").classList.add("hidden");
+}
+$("cancelCategory").addEventListener("click",resetCategoryForm);
+
+window.deleteCategory=async id=>{
+  if(products.some(p=>p.category_id===id)){
+    alert("Esta categoría todavía tiene productos. Mueve o elimina esos productos primero.");
+    return;
+  }
+  if(!confirm("¿Eliminar esta categoría?")) return;
+  const {error}=await sb.from("categories").delete().eq("id",id);
+  if(error){alert(error.message);return;}
+  await refreshAll();
+};
+
+async function loadProducts(){
+  const {data,error}=await sb.from("products").select("*").order("sort_order").order("created_at",{ascending:false});
+  if(error){showStatus("productStatus",error.message,"error");return;}
+  products=data||[];
+  $("productList").innerHTML=products.length?products.map(p=>{
+    const cat=categories.find(c=>c.id===p.category_id)?.name||"Sin categoría";
+    return `<div class="item">
+      <div class="product-main">
+        ${p.image_url?`<img class="thumb" src="${p.image_url}" alt="">`:`<div class="thumb"></div>`}
+        <div class="item-main"><strong>${p.name}</strong><div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}</div></div>
+      </div>
+      <div class="actions">
+        <button class="btn secondary" onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
+        <button class="btn danger" onclick='deleteProduct("${p.id}")'>Eliminar</button>
+      </div>
+    </div>`;
+  }).join(""):`<div class="note">Todavía no hay productos.</div>`;
+}
+
+$("productForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!categories.length){showStatus("productStatus","Primero crea una categoría.","error");return;}
+  showStatus("productStatus","Guardando...");
+
+  const id=$("productId").value;
+  let imageUrl=$("existingImage").value||null;
+  let imagePath=$("existingImagePath").value||null;
+  const file=$("productImage").files[0];
+
+  if(file){
+    const path=`products/${safeFileName(file.name)}`;
+    const {error:uploadError}=await sb.storage.from("product-images").upload(path,file,{upsert:false,cacheControl:"3600"});
+    if(uploadError){showStatus("productStatus","Error al subir imagen: "+uploadError.message,"error");return;}
+    const {data:urlData}=sb.storage.from("product-images").getPublicUrl(path);
+    imageUrl=urlData.publicUrl;imagePath=path;
+  }
+
+  const payload={
+    name:$("productName").value.trim(),
+    price:Number($("productPrice").value),
+    category_id:$("productCategory").value,
+    description:$("productDescription").value.trim(),
+    available:$("productAvailable").value==="true",
+    sort_order:Number($("productSort").value||0),
+    image_url:imageUrl,
+    image_path:imagePath
+  };
+
+  let res;
+  if(id) res=await sb.from("products").update(payload).eq("id",id);
+  else res=await sb.from("products").insert(payload);
+
+  if(res.error){showStatus("productStatus",res.error.message,"error");return;}
+
+  // If a new image replaced an old one, remove the previous file after DB save.
+  const oldPath=$("existingImagePath").value;
+  if(file && oldPath && oldPath!==imagePath){
+    await sb.storage.from("product-images").remove([oldPath]);
+  }
+
+  resetProductForm();
+  showStatus("productStatus","Producto guardado.","success");
+  await refreshAll();
+});
+
+window.editProduct=p=>{
+  $("productId").value=p.id;
+  $("productName").value=p.name;
+  $("productPrice").value=p.price;
+  $("productCategory").value=p.category_id;
+  $("productDescription").value=p.description||"";
+  $("productAvailable").value=String(p.available);
+  $("productSort").value=p.sort_order||0;
+  $("existingImage").value=p.image_url||"";
+  $("existingImagePath").value=p.image_path||"";
+  $("productImage").value="";
+  $("cancelProduct").classList.remove("hidden");
+  $("productForm").scrollIntoView({behavior:"smooth",block:"start"});
+};
+function resetProductForm(){
+  $("productForm").reset();
+  $("productId").value="";$("existingImage").value="";$("existingImagePath").value="";
+  $("productSort").value=0;$("productAvailable").value="true";
+  $("cancelProduct").classList.add("hidden");
+}
+$("cancelProduct").addEventListener("click",resetProductForm);
+
+window.deleteProduct=async id=>{
+  const p=products.find(x=>x.id===id);
+  if(!confirm(`¿Eliminar "${p?.name||"este producto"}"?`)) return;
+  const {error}=await sb.from("products").delete().eq("id",id);
+  if(error){alert(error.message);return;}
+  if(p?.image_path) await sb.storage.from("product-images").remove([p.image_path]);
+  await refreshAll();
+};
+
+ensureSession();
+</script>
+</body>
+</html>
