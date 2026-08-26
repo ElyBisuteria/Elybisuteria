@@ -136,8 +136,21 @@ textarea{min-height:90px;resize:vertical}
       </div>
     </div>
 
-    <div id="productFilterSummary" class="filter-summary"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div id="productFilterSummary" class="filter-summary" style="margin-bottom:0"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label for="productsPerPage" style="margin:0">Mostrar</label>
+        <select id="productsPerPage" style="width:auto;min-width:90px">
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
     <div id="productList" class="list"></div>
+
+    <div id="productPagination" class="actions" style="justify-content:center;margin-top:18px"></div>
   </section>
 </div>
 
@@ -295,6 +308,77 @@ function productSearchText(p){
   return normalizeSearch(fields.join(" "));
 }
 
+let productCurrentPage=1;
+
+function getProductsPerPage(){
+  return Number($("productsPerPage")?.value || 20);
+}
+
+function renderProductPagination(totalItems){
+  const container=$("productPagination");
+  if(!container) return;
+
+  const perPage=getProductsPerPage();
+  const totalPages=Math.max(1,Math.ceil(totalItems/perPage));
+
+  if(productCurrentPage>totalPages) productCurrentPage=totalPages;
+
+  if(totalItems<=perPage){
+    container.innerHTML="";
+    return;
+  }
+
+  const buttons=[];
+
+  buttons.push(
+    `<button class="btn secondary" type="button" data-page-action="prev" ${productCurrentPage===1?"disabled":""}>Anterior</button>`
+  );
+
+  const maxVisible=5;
+  let start=Math.max(1,productCurrentPage-2);
+  let end=Math.min(totalPages,start+maxVisible-1);
+  if(end-start+1<maxVisible) start=Math.max(1,end-maxVisible+1);
+
+  if(start>1){
+    buttons.push(`<button class="btn secondary" type="button" data-page="1">1</button>`);
+    if(start>2) buttons.push(`<span class="meta" style="align-self:center">…</span>`);
+  }
+
+  for(let i=start;i<=end;i++){
+    buttons.push(
+      `<button class="btn ${i===productCurrentPage?"":"secondary"}" type="button" data-page="${i}">${i}</button>`
+    );
+  }
+
+  if(end<totalPages){
+    if(end<totalPages-1) buttons.push(`<span class="meta" style="align-self:center">…</span>`);
+    buttons.push(`<button class="btn secondary" type="button" data-page="${totalPages}">${totalPages}</button>`);
+  }
+
+  buttons.push(
+    `<button class="btn secondary" type="button" data-page-action="next" ${productCurrentPage===totalPages?"disabled":""}>Siguiente</button>`
+  );
+
+  container.innerHTML=buttons.join("");
+
+  container.querySelectorAll("[data-page]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      productCurrentPage=Number(btn.dataset.page);
+      renderProductList();
+      $("productList").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+
+  container.querySelectorAll("[data-page-action]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(btn.dataset.pageAction==="prev" && productCurrentPage>1) productCurrentPage--;
+      if(btn.dataset.pageAction==="next" && productCurrentPage<totalPages) productCurrentPage++;
+      renderProductList();
+      $("productList").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+}
+
 function renderProductList(){
   const query=normalizeSearch($("productSearch")?.value.trim()||"");
   const categoryId=$("productCategoryFilter")?.value||"";
@@ -305,10 +389,20 @@ function renderProductList(){
     return matchesCategory && matchesSearch;
   });
 
-  $("productFilterSummary").textContent=
-    `${visible.length} de ${products.length} producto${products.length===1?"":"s"} mostrado${visible.length===1?"":"s"}.`;
+  const perPage=getProductsPerPage();
+  const totalPages=Math.max(1,Math.ceil(visible.length/perPage));
+  if(productCurrentPage>totalPages) productCurrentPage=totalPages;
 
-  $("productList").innerHTML=visible.length?visible.map(p=>{
+  const startIndex=(productCurrentPage-1)*perPage;
+  const pageItems=visible.slice(startIndex,startIndex+perPage);
+
+  const firstShown=visible.length?startIndex+1:0;
+  const lastShown=Math.min(startIndex+perPage,visible.length);
+
+  $("productFilterSummary").textContent=
+    `${visible.length} de ${products.length} producto${products.length===1?"":"s"} encontrado${visible.length===1?"":"s"} · mostrando ${firstShown}-${lastShown}.`;
+
+  $("productList").innerHTML=pageItems.length?pageItems.map(p=>{
     const cat=categories.find(c=>c.id===p.category_id)?.name||"Sin categoría";
     const saleText=p.on_sale && p.sale_price!==null
       ? ` · Oferta $${Number(p.sale_price).toLocaleString("es-MX")}`
@@ -327,10 +421,22 @@ function renderProductList(){
       </div>
     </div>`;
   }).join(""):`<div class="note">No se encontraron productos con esos filtros.</div>`;
+
+  renderProductPagination(visible.length);
 }
 
-$("productSearch").addEventListener("input",renderProductList);
-$("productCategoryFilter").addEventListener("change",renderProductList);
+$("productSearch").addEventListener("input",()=>{
+  productCurrentPage=1;
+  renderProductList();
+});
+$("productCategoryFilter").addEventListener("change",()=>{
+  productCurrentPage=1;
+  renderProductList();
+});
+$("productsPerPage").addEventListener("change",()=>{
+  productCurrentPage=1;
+  renderProductList();
+});
 
 $("productForm").addEventListener("submit",async e=>{
   e.preventDefault();
