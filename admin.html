@@ -412,10 +412,12 @@ function renderProductList(){
         ${p.image_url?`<img class="thumb" src="${p.image_url}" alt="">`:`<div class="thumb"></div>`}
         <div class="item-main">
           <strong>${p.name}</strong>
-          <div class="meta">${cat} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}${p.is_new?" · Nuevo":""}${p.on_sale?" · Oferta":""}${saleText}</div>
+          <div class="meta">${cat} · Orden: ${p.sort_order ?? 0} · $${Number(p.price).toLocaleString("es-MX")} MXN · ${p.available?"Disponible":"No disponible"}${p.is_new?" · Nuevo":""}${p.on_sale?" · Oferta":""}${saleText}</div>
         </div>
       </div>
       <div class="actions">
+        <button class="btn secondary" type="button" onclick='moveProduct("${p.id}","up")'>↑ Subir</button>
+        <button class="btn secondary" type="button" onclick='moveProduct("${p.id}","down")'>↓ Bajar</button>
         <button class="btn secondary" onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
         <button class="btn danger" onclick='deleteProduct("${p.id}")'>Eliminar</button>
       </div>
@@ -491,6 +493,53 @@ $("productForm").addEventListener("submit",async e=>{
   showStatus("productStatus","Producto guardado.","success");
   await refreshAll();
 });
+
+
+window.moveProduct=async (id,direction)=>{
+  const ordered=[...products].sort((a,b)=>{
+    const ao=Number(a.sort_order||0), bo=Number(b.sort_order||0);
+    if(ao!==bo) return ao-bo;
+    return String(a.created_at||"").localeCompare(String(b.created_at||""));
+  });
+
+  const index=ordered.findIndex(p=>p.id===id);
+  if(index<0) return;
+
+  const targetIndex=direction==="up" ? index-1 : index+1;
+  if(targetIndex<0 || targetIndex>=ordered.length) return;
+
+  const current=ordered[index];
+  const target=ordered[targetIndex];
+  let currentOrder=Number(current.sort_order||0);
+  let targetOrder=Number(target.sort_order||0);
+
+  if(currentOrder===targetOrder){
+    for(let i=0;i<ordered.length;i++){
+      const {error}=await sb.from("products")
+        .update({sort_order:(i+1)*10})
+        .eq("id",ordered[i].id);
+      if(error){alert("No se pudo reorganizar: "+error.message);return;}
+    }
+    await loadProducts();
+    return moveProduct(id,direction);
+  }
+
+  const {error:e1}=await sb.from("products")
+    .update({sort_order:targetOrder})
+    .eq("id",current.id);
+  if(e1){alert("No se pudo mover el producto: "+e1.message);return;}
+
+  const {error:e2}=await sb.from("products")
+    .update({sort_order:currentOrder})
+    .eq("id",target.id);
+  if(e2){
+    await sb.from("products").update({sort_order:currentOrder}).eq("id",current.id);
+    alert("No se pudo completar el cambio: "+e2.message);
+    return;
+  }
+
+  await loadProducts();
+};
 
 window.editProduct=p=>{
   $("productId").value=p.id;
